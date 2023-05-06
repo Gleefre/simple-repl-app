@@ -9,7 +9,7 @@ It is a simple app that starts [[https://github.com/Gleefre/simple-repl][Simple 
 ~and-jni~, ~cl-android~ and ~android-log~ are preloaded,
 as well as ~alexandria~, ~serapeum~, ~cffi~, ~usocket~ and ~bordeaux-threads~.
 
-A prebuilt apk available.
+A prebuilt apk is available.
 To build the app yourself just call ~./build-scripts/make-all.sh~.
 
 * Bugs & Contributions
