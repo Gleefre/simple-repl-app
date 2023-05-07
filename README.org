@@ -11,7 +11,19 @@ as well as ~alexandria~, ~serapeum~, ~cffi~, ~usocket~ and ~bordeaux-threads~.
 
 A prebuilt apk is available.
 To build the app yourself just call ~./build-scripts/make-all.sh~.
+* Connect to the running app instance
+  App launches Simple REPL server on port ~4017~ on ~localhost~ interface.
 
+  After connecting to the device with ~adb~ you need to setup port forwarding:
+  #+BEGIN_SRC bash
+  adb forward tcp:4017 tcp:4017
+  #+END_SRC
+
+  And then you can simply connect from any lisp on your computer:
+  #+BEGIN_SRC lisp
+  (ql:quickload :simple-repl/client)
+  (simple-repl/server:run 4017)
+  #+END_SRC
 * Bugs & Contributions
   Feel free to report bugs or make suggestions by filing an issue on github.
 
