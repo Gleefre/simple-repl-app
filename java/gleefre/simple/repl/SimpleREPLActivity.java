@@ -29,10 +29,11 @@ public class SimpleREPLActivity extends Activity {
         public void onClick(View v) {
           if (!simpleREPLRunning()) {
             launchSimpleREPL();
+            button.setText("Simple REPL is " + (simpleREPLRunning() ? "on" : "off") + " (restarted)");
           } else {
             onClickLisp();
+            button.setText("Simple REPL is " + (simpleREPLRunning() ? "on" : "off"));
           }
-          button.setText("Simple REPL is " + (simpleREPLRunning() ? "on" : "off"));
         }
       });
   }
