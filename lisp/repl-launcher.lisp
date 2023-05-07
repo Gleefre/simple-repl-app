@@ -15,7 +15,13 @@
                 #:save-lisp-and-die)
   (:local-nicknames (#:alog #:android-log/cffi)
                     (#:j    #:and-jni)
-                    (#:jll  #:and-jni/cffi)))
+                    (#:jll  #:and-jni/cffi))
+  (:export #:*on-click-hooks*
+           #:*port*
+           #:*simple-repl-thread*
+           #:move-home
+           #:get-app-path
+           #:log-backtrace-and-abort))
 
 (in-package #:simple-repl-app)
 
@@ -26,7 +32,6 @@
   "NIL or thread of the Simple REPL.")
 
 (define-alien-callable simple-repl-running-p sb-alien:int ()
-  (alog:write :info "ALIEN" (princ-to-string *simple-repl-thread*))
   (when (and *simple-repl-thread*
              (not (bt:thread-alive-p *simple-repl-thread*)))
     (setf *simple-repl-thread* nil))
@@ -39,10 +44,12 @@
 
 ;; On click hook
 
-(defparameter *on-click-hook* nil)
+(defparameter *on-click-hooks* nil)
 
 (define-alien-callable on-click sb-alien:void ()
-  (mapcar #'funcall *on-click-hook*))
+  (alog:write :info "ALIEN" (princ-to-string (bt:current-thread)))
+  (alog:write :info "ALIEN" (princ-to-string *on-click-hooks*))
+  (mapcar #'funcall *on-click-hooks*))
 
 ;; Custom debugger hook.
 
