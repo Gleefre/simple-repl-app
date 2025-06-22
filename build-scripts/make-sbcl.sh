@@ -11,34 +11,51 @@ case $uname_arch in
 esac
 echo "Architecture $abi determined."
 
-# Cloning sbcl if needed (from my fork)
-if [ -d sbcl-$abi ];
+build_dir=sbcl-android-pptl-build-$abi
+
+# Clean or clone (repo)
+if [ -d "$build_dir" ];
 then
-    echo "sbcl-$abi already exists."
+    echo "Cleaning $build_dir."
+
+    ( cd $build_dir;
+      git checkout sbcl-android-upd-pptl;
+      ./clean.sh;
+      if [ -d android-libs ]; then rm -r android-libs; fi )
 else
-    git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl sbcl-$abi
+    echo "Cloning SBCL into $build_dir."
+    git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl $build_dir
 fi
 
-# Clean
+# Clean (adb)
+echo "Deleting /data/local/tmp/sbcl on the target device."
 adb shell rm -rf /data/local/tmp/sbcl
 
-# Setup libzstd for core compression
-mkdir -p sbcl-$abi/android-libs
-cp zstd-headers/* sbcl-$abi/android-libs/
-cp libs/$abi/libzstd.so sbcl-$abi/android-libs/
+# Setup android-libs
+echo "Creating $build_dir/android-libs."
+mkdir -p $build_dir/android-libs
+cp prebuilt/sbcl-android-libs/$abi/* $build_dir/android-libs
 
-# Building sbcl
-echo "Building sbcl."
-cd sbcl-$abi
-echo '"2.5.5-android"' > version.lisp-expr
-./make-android.sh --fancy
-cd ..
+# Build
+echo "Building SBCL."
+( cd $build_dir;
+  echo '"2.5.5-android"' > version.lisp-expr;
+  ./make-android.sh --fancy )
 
-# Copy library to libs folder
-echo "Copying sbcl-$abi/src/runtime/libsbcl.so to libs/$abi/libsbcl.so."
-cp sbcl-$abi/src/runtime/libsbcl.so libs/$abi/libsbcl.so
+# Pack
+pack_dir=sbcl-android-pptl-$abi
+echo "Packing SBCL into $pack_dir."
+cp build-scripts/sbcl-android-pack.sh $build_dir
+( cd $build_dir;
+  ./sbcl-android-pack.sh $pack_dir;
+  zip -r $pack_dir $pack_dir; )
 
-# Prepare prebuilt folder for further use
-if [ ! -d sbcl-prebuilt-$abi ]; then
-    ./build-scripts/prepare-prebuilt-sbcl.sh
-fi
+# Move packed zip into prebuilt section
+echo "Moving $build_dir/$pack_dir to prebuilt/sbcl."
+mv $build_dir/$pack_dir.zip prebuilt/sbcl
+
+# Copy libsbcl.so to libs folder, as well as from android-libs
+echo "Copying sbcl-$abi/src/runtime/libsbcl.so to libs/$abi."
+cp $build_dir/src/runtime/libsbcl.so libs/$abi
+echo "Copying sbcl-$abi/android-libs/*.so to libs/$abi."
+cp $build_dir/android-libs*.so libs/$abi
