@@ -2,19 +2,19 @@
 // Also see https://stackoverflow.com/questions/52020407/android-project-compiles-and-runs-without-module-level-build-gradle-is-it-right
 
 plugins {
-  id 'com.android.application' version '8.0.1'
+  id 'com.android.application' version '8.10.0'
 }
 
 android {
   namespace 'gleefre.simple.repl'
 
-  compileSdk 33
+  compileSdk 36
 
   defaultConfig {
     applicationId 'gleefre.simple.repl'
 
     minSdk 21
-    targetSdk 33
+    targetSdk 36
 
     versionCode 1
     versionName '1.0'
