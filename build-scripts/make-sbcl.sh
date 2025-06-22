@@ -16,7 +16,7 @@ if [ -d sbcl-$abi ];
 then
     echo "sbcl-$abi already exists."
 else
-    git clone https://github.com/Gleefre/sbcl.git -b pass-pointer-to-lisp sbcl-$abi
+    git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl sbcl-$abi
 fi
 
 # Clean
@@ -30,7 +30,7 @@ cp libs/$abi/libzstd.so sbcl-$abi/android-libs/
 # Building sbcl
 echo "Building sbcl."
 cd sbcl-$abi
-echo '"2.3.4-android"' > version.lisp-expr
+echo '"2.5.5-android"' > version.lisp-expr
 ./make-android.sh --fancy
 cd ..
 
