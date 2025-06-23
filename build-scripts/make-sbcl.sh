@@ -1,15 +1,22 @@
 #!/bin/sh
 set -e
 
-# Guessing architecture.
-uname_arch=`adb shell uname -m`
-case $uname_arch in
-    x86_64) abi=x86_64 ;;
-    aarch64) abi=arm64-v8a ;;
-    *) echo "Architecture $uname_arch is not supported."
-       exit 1 ;;
-esac
-echo "Architecture $abi determined."
+# Determine target abi
+if [ -n "$1" ]; then
+    abi=$1
+elif [ -n "$ABI" ]; then
+    abi=$ABI
+else
+    uname_arch=`adb shell uname -m`
+
+    case $uname_arch in
+        x86_64) abi=x86_64 ;;
+        aarch64) abi=arm64-v8a ;;
+        *) echo "Architecture $uname_arch is not supported."
+           exit 1 ;;
+    esac
+fi
+echo "Determined target $abi."
 
 build_dir=sbcl-android-pptl-build-$abi
 
