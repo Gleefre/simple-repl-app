@@ -22,9 +22,9 @@ android {
 
   sourceSets {
     main {
-      java.srcDir 'java'
-      manifest.srcFile 'AndroidManifest.xml'
-      jniLibs.srcDir 'libs'
+      java.srcDir 'src/java'
+      manifest.srcFile 'src/AndroidManifest.xml'
+      jniLibs.srcDir 'prebuilt/libs'
     }
   }
 
