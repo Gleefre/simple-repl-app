@@ -63,7 +63,7 @@ echo "Moving $sbcl_dir/$pack_dir to prebuilt/sbcl."
 mv "$sbcl_dir"/"$pack_dir".zip prebuilt/sbcl
 
 # Copy libsbcl.so to libs folder, as well as libraries from android-libs
-echo "Copying sbcl-$ABI/src/runtime/libsbcl.so to libs/$ABI."
+echo "Copying $sbcl_dir/src/runtime/libsbcl.so to libs/$ABI."
 cp "$sbcl_dir"/src/runtime/libsbcl.so libs/$ABI
-echo "Copying sbcl-$ABI/android-libs/lib*.so to libs/$ABI."
+echo "Copying $sbcl_dir/android-libs/lib*.so to libs/$ABI."
 cp "$sbcl_dir"/android-libs/lib*.so libs/$ABI
