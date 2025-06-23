@@ -20,6 +20,7 @@ echo "Determined target $ABI."
 prebuilt_android_libs=prebuilt/sbcl-android-libs/$ABI
 sbcl_dir=build/external/sbcl-android-pptl-build-$ABI
 pack_name=sbcl-android-pptl-$ABI
+jni_libs=prebuilt/libs/$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
 # Clean (adb)
@@ -63,7 +64,7 @@ echo "Moving $sbcl_dir/$pack_name to prebuilt/sbcl."
 mv "$sbcl_dir"/"$pack_name".zip prebuilt/sbcl
 
 # Copy libsbcl.so to libs folder, as well as libraries from android-libs
-echo "Copying $sbcl_dir/src/runtime/libsbcl.so to prebuilt/libs/$ABI."
-cp "$sbcl_dir"/src/runtime/libsbcl.so prebuilt/libs/$ABI
-echo "Copying $sbcl_dir/android-libs/lib*.so to prebuilt/libs/$ABI."
-cp "$sbcl_dir"/android-libs/lib*.so prebuilt/libs/$ABI
+echo "Copying $sbcl_dir/src/runtime/libsbcl.so to $jni_libs."
+cp "$sbcl_dir"/src/runtime/libsbcl.so "$jni_libs"
+echo "Copying $sbcl_dir/android-libs/lib*.so to $jni_libs."
+cp "$sbcl_dir"/android-libs/lib*.so "$jni_libs"
