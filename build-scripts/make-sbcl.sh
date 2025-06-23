@@ -70,11 +70,11 @@ if [ -d build/external/"$pack_name" ]; then
 fi
 mv "$sbcl_dir"/"$pack_name" build/external/"$pack_name"
 
-# Move packed zip into prebuilt section
+# Move packed zip to prebuilt/sbcl
 echo "Moving $sbcl_dir/$pack_name to prebuilt/sbcl."
 mv "$sbcl_dir"/"$pack_name".zip prebuilt/sbcl
 
-# Copy libsbcl.so to libs folder, as well as libraries from android-libs
+# Copy libsbcl.so to prebuilt/libs folder, as well as libraries from android-libs
 echo "Copying $sbcl_dir/src/runtime/libsbcl.so to $jni_libs."
 cp "$sbcl_dir"/src/runtime/libsbcl.so "$jni_libs"
 echo "Copying $sbcl_dir/android-libs/lib*.so to $jni_libs."
