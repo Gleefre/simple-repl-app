@@ -16,13 +16,22 @@ elif [ -z "$ABI" ]; then
 fi
 echo "Determined target $ABI."
 
-LISP_FILENAME=repl-launcher.lisp
+lisp_dir=simple-repl-app
+lisp_entry=repl-launcher.lisp
+lisp_core=lib.gleefre.core.so
+jni_libs=prebuilt/libs/$ABI
 
-# Remove previous core
-adb shell rm -f /data/local/tmp/$LISP_FILENAME
-adb shell rm -f /data/local/tmp/libcore.so
+# Clean core and lisp source (adb)
+adb shell rm -rf /data/local/tmp/"$lisp_dir"
+adb shell rm -f /data/local/tmp/"$lisp_core"
 
+# Push lisp source
+adb push src/lisp/ /data/local/tmp/"$lisp_dir"/
+
+# Build core
 echo "Building core"
-adb push lisp/$LISP_FILENAME /data/local/tmp
-adb shell "cd /data/local/tmp ; export HOME=\$(pwd); ./sbcl/run-sbcl.sh --load $LISP_FILENAME";
-adb pull /data/local/tmp/lib.gleefre.core.so libs/$abi/lib.gleefre.core.so
+adb shell "cd /data/local/tmp ; export HOME=\$(pwd) ; ./sbcl/run-sbcl.sh --load $lisp_dir/$lisp_entry";
+
+# Copy core into prebuilt/libs
+echo "Copying $lisp_core to $jni_libs"
+adb pull /data/local/tmp/"$lisp_core" "$jni_libs"
