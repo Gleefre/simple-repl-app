@@ -38,7 +38,9 @@ then
     ( cd "$sbcl_dir";
       git checkout sbcl-android-upd-pptl;
       ./clean.sh;
-      if [ -d android-libs ]; then rm -r android-libs; fi )
+      if [ -d android-libs ]; then rm -r android-libs; fi
+      if [ -d "$pack_name" ]; then rm -r "$pack_name"; fi
+      if [ -f "$pack_name.zip" ]; then rm "$pack_name.zip"; fi )
 else
     echo "Cloning SBCL into $sbcl_dir."
     git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl "$sbcl_dir"
