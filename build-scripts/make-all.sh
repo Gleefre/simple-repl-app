@@ -9,6 +9,6 @@ set -e
 # Lisp, C and Java
 ./build-scripts/make-core.sh
 ./build-scripts/make-c.sh
-./gradlew assembleDebug
+./build-scripts/make-java.sh  # basically ./gradlew assembleDebug
 
 # cp build/outputs/apk/debug/simple-repl-debug.apk prebuilt-apk/
