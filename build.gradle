@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-  namespace 'gleefre.simple.repl'
+  namespace = 'gleefre.simple.repl'
 
-  compileSdk 36
+  compileSdk = 36
 
   defaultConfig {
     applicationId 'gleefre.simple.repl'
 
-    minSdk 21
-    targetSdk 36
+    minSdk = 21
+    targetSdk = 36
 
     versionCode 1
     versionName '1.0'
