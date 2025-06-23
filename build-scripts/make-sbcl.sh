@@ -23,6 +23,9 @@ pack_name=sbcl-android-pptl-$ABI
 jni_libs=prebuilt/libs/$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
+# Ensure build directory exists
+mkdir -p build/external
+
 # Clean (adb)
 echo "Deleting $adb_sbcl_dir on the target device."
 adb shell rm -rf "$adb_sbcl_dir"
