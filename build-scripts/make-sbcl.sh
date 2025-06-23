@@ -18,22 +18,22 @@ echo "Determined target $ABI."
 
 # Various dirs
 prebuilt_android_libs=prebuilt/sbcl-android-libs/$ABI
-build_dir=sbcl-android-pptl-build-$ABI
+sbcl_dir=sbcl-android-pptl-build-$ABI
 pack_dir=sbcl-android-pptl-$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
 # Clean or clone (repo)
-if [ -d "$build_dir" ];
+if [ -d "$sbcl_dir" ];
 then
-    echo "Cleaning $build_dir."
+    echo "Cleaning $sbcl_dir."
 
-    ( cd "$build_dir";
+    ( cd "$sbcl_dir";
       git checkout sbcl-android-upd-pptl;
       ./clean.sh;
       if [ -d android-libs ]; then rm -r android-libs; fi )
 else
-    echo "Cloning SBCL into $build_dir."
-    git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl "$build_dir"
+    echo "Cloning SBCL into $sbcl_dir."
+    git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl "$sbcl_dir"
 fi
 
 # Clean (adb)
@@ -41,29 +41,29 @@ echo "Deleting $adb_sbcl_dir on the target device."
 adb shell rm -rf "$adb_sbcl_dir"
 
 # Setup android-libs
-echo "Creating $build_dir/android-libs."
-mkdir -p "$build_dir"/android-libs
-cp "$prebuilt_android_libs"/* $build_dir/android-libs
+echo "Creating $sbcl_dir/android-libs."
+mkdir -p "$sbcl_dir"/android-libs
+cp "$prebuilt_android_libs"/* $sbcl_dir/android-libs
 
 # Build
 echo "Building SBCL."
-( cd "$build_dir";
+( cd "$sbcl_dir";
   echo '"2.5.5-android"' > version.lisp-expr;
   ./make-android.sh --fancy )
 
 # Pack
 echo "Packing SBCL into $pack_dir."
-cp build-scripts/sbcl-android-pack.sh "$build_dir"
-( cd "$build_dir";
+cp build-scripts/sbcl-android-pack.sh "$sbcl_dir"
+( cd "$sbcl_dir";
   ./sbcl-android-pack.sh "$pack_dir";
   zip -r "$pack_dir" "$pack_dir"; )
 
 # Move packed zip into prebuilt section
-echo "Moving $build_dir/$pack_dir to prebuilt/sbcl."
-mv "$build_dir"/"$pack_dir".zip prebuilt/sbcl
+echo "Moving $sbcl_dir/$pack_dir to prebuilt/sbcl."
+mv "$sbcl_dir"/"$pack_dir".zip prebuilt/sbcl
 
 # Copy libsbcl.so to libs folder, as well as libraries from android-libs
 echo "Copying sbcl-$ABI/src/runtime/libsbcl.so to libs/$ABI."
-cp "$build_dir"/src/runtime/libsbcl.so libs/$ABI
+cp "$sbcl_dir"/src/runtime/libsbcl.so libs/$ABI
 echo "Copying sbcl-$ABI/android-libs/lib*.so to libs/$ABI."
-cp "$build_dir"/android-libs/lib*.so libs/$ABI
+cp "$sbcl_dir"/android-libs/lib*.so libs/$ABI
