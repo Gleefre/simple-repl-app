@@ -22,6 +22,10 @@ sbcl_dir=sbcl-android-pptl-build-$ABI
 pack_dir=sbcl-android-pptl-$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
+# Clean (adb)
+echo "Deleting $adb_sbcl_dir on the target device."
+adb shell rm -rf "$adb_sbcl_dir"
+
 # Clean or clone (repo)
 if [ -d "$sbcl_dir" ];
 then
@@ -35,10 +39,6 @@ else
     echo "Cloning SBCL into $sbcl_dir."
     git clone https://github.com/Gleefre/sbcl.git -b sbcl-android-upd-pptl "$sbcl_dir"
 fi
-
-# Clean (adb)
-echo "Deleting $adb_sbcl_dir on the target device."
-adb shell rm -rf "$adb_sbcl_dir"
 
 # Setup android-libs
 echo "Creating $sbcl_dir/android-libs."
