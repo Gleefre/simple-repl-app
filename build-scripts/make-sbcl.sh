@@ -18,8 +18,8 @@ echo "Determined target $ABI."
 
 # Various dirs
 prebuilt_android_libs=prebuilt/sbcl-android-libs/$ABI
-sbcl_dir=sbcl-android-pptl-build-$ABI
 pack_dir=sbcl-android-pptl-$ABI
+sbcl_dir=build/external/sbcl-android-pptl-build-$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
 # Clean (adb)
