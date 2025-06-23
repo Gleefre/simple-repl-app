@@ -18,8 +18,8 @@ echo "Determined target $ABI."
 
 # Various dirs
 prebuilt_android_libs=prebuilt/sbcl-android-libs/$ABI
-pack_dir=sbcl-android-pptl-$ABI
 sbcl_dir=build/external/sbcl-android-pptl-build-$ABI
+pack_name=sbcl-android-pptl-$ABI
 adb_sbcl_dir=/data/local/tmp/sbcl
 
 # Clean (adb)
@@ -52,18 +52,18 @@ echo "Building SBCL."
   ./make-android.sh --fancy )
 
 # Pack
-echo "Packing SBCL into $pack_dir."
+echo "Packing SBCL into $pack_name."
 cp build-scripts/sbcl-android-pack.sh "$sbcl_dir"
 ( cd "$sbcl_dir";
-  ./sbcl-android-pack.sh "$pack_dir";
-  zip -r "$pack_dir" "$pack_dir"; )
+  ./sbcl-android-pack.sh "$pack_name";
+  zip -r "$pack_name" "$pack_name"; )
 
 # Move packed zip into prebuilt section
-echo "Moving $sbcl_dir/$pack_dir to prebuilt/sbcl."
-mv "$sbcl_dir"/"$pack_dir".zip prebuilt/sbcl
+echo "Moving $sbcl_dir/$pack_name to prebuilt/sbcl."
+mv "$sbcl_dir"/"$pack_name".zip prebuilt/sbcl
 
 # Copy libsbcl.so to libs folder, as well as libraries from android-libs
-echo "Copying $sbcl_dir/src/runtime/libsbcl.so to libs/$ABI."
-cp "$sbcl_dir"/src/runtime/libsbcl.so libs/$ABI
-echo "Copying $sbcl_dir/android-libs/lib*.so to libs/$ABI."
-cp "$sbcl_dir"/android-libs/lib*.so libs/$ABI
+echo "Copying $sbcl_dir/src/runtime/libsbcl.so to prebuilt/libs/$ABI."
+cp "$sbcl_dir"/src/runtime/libsbcl.so prebuilt/libs/$ABI
+echo "Copying $sbcl_dir/android-libs/lib*.so to prebuilt/libs/$ABI."
+cp "$sbcl_dir"/android-libs/lib*.so prebuilt/libs/$ABI
