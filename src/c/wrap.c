@@ -13,6 +13,7 @@ extern void pass_pointer_to_lisp(void* pointer);
 __attribute__((visibility("default"))) void (*launch_simple_repl)(void);
 __attribute__((visibility("default"))) int (*simple_repl_running_p)(void);
 __attribute__((visibility("default"))) void (*on_click)(void);
+__attribute__((visibility("default"))) int (*lisp_init)(void);
 
 static int initialized = 0;
 
@@ -23,6 +24,7 @@ int init(char* core) {
   if (self_handle == NULL) return -2;
   pass_pointer_to_lisp(self_handle);
   if (initialize_lisp(3, init_args) != 0) return -1;
+  if (lisp_init() != 0) return -3;
   return 0;
 }
 

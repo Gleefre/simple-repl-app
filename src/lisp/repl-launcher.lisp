@@ -145,16 +145,19 @@
       (move-home (get-app-path))))
   (cl-android:init))
 
+(define-alien-callable lisp-init sb-alien:int ()
+  (handler-case (prog1 0 (on-load))
+    (error () 1)))
+
 (push (lambda ()
         (push (sb-alien::make-shared-object
                :pathname (pathname "lib.gleefre.wrap.so")
                :namestring "lib.gleefre.wrap.so"
                :handle (sb-alien:get-pointer-from-c)
                :dont-save t)
-              sb-alien::*shared-objects*)
-        (on-load))
+              sb-alien::*shared-objects*))
       *init-hooks*)
 
 (save-lisp-and-die "lib.gleefre.core.so"
-                   :callable-exports '(simple-repl-running-p launch-simple-repl on-click)
+                   :callable-exports '(simple-repl-running-p launch-simple-repl on-click lisp-init)
                    :compression t)
