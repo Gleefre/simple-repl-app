@@ -1,24 +1,22 @@
 #!/bin/sh
 set -e
 
-# Determine target abi
+# Determine target ABI
 if [ -n "$1" ]; then
-    abi=$1
-elif [ -n "$ABI" ]; then
-    abi=$ABI
-else
+    ABI=$1
+elif [ -z "$ABI" ]; then
     uname_arch=`adb shell uname -m`
 
     case $uname_arch in
-        x86_64) abi=x86_64 ;;
-        aarch64) abi=arm64-v8a ;;
+        x86_64) ABI=x86_64 ;;
+        aarch64) ABI=arm64-v8a ;;
         *) echo "Architecture $uname_arch is not supported."
            exit 1 ;;
     esac
 fi
-echo "Determined target $abi."
+echo "Determined target $ABI."
 
-build_dir=sbcl-android-pptl-build-$abi
+build_dir=sbcl-android-pptl-build-$ABI
 
 # Clean or clone (repo)
 if [ -d "$build_dir" ];
@@ -41,7 +39,7 @@ adb shell rm -rf /data/local/tmp/sbcl
 # Setup android-libs
 echo "Creating $build_dir/android-libs."
 mkdir -p $build_dir/android-libs
-cp prebuilt/sbcl-android-libs/$abi/* $build_dir/android-libs
+cp prebuilt/sbcl-android-libs/$ABI/* $build_dir/android-libs
 
 # Build
 echo "Building SBCL."
@@ -50,7 +48,7 @@ echo "Building SBCL."
   ./make-android.sh --fancy )
 
 # Pack
-pack_dir=sbcl-android-pptl-$abi
+pack_dir=sbcl-android-pptl-$ABI
 echo "Packing SBCL into $pack_dir."
 cp build-scripts/sbcl-android-pack.sh $build_dir
 ( cd $build_dir;
@@ -62,7 +60,7 @@ echo "Moving $build_dir/$pack_dir to prebuilt/sbcl."
 mv $build_dir/$pack_dir.zip prebuilt/sbcl
 
 # Copy libsbcl.so to libs folder, as well as from android-libs
-echo "Copying sbcl-$abi/src/runtime/libsbcl.so to libs/$abi."
-cp $build_dir/src/runtime/libsbcl.so libs/$abi
-echo "Copying sbcl-$abi/android-libs/*.so to libs/$abi."
-cp $build_dir/android-libs*.so libs/$abi
+echo "Copying sbcl-$ABI/src/runtime/libsbcl.so to libs/$ABI."
+cp $build_dir/src/runtime/libsbcl.so libs/$ABI
+echo "Copying sbcl-$ABI/android-libs/*.so to libs/$ABI."
+cp $build_dir/android-libs*.so libs/$ABI
