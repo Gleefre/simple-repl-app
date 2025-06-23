@@ -62,6 +62,12 @@ cp build-scripts/sbcl-android-pack.sh "$sbcl_dir"
   ./sbcl-android-pack.sh "$pack_name";
   zip -r "$pack_name" "$pack_name"; )
 
+# Move pack folder to build/external
+if [ -d build/external/"$pack_name" ]; then
+    rm -r build/external/"$pack_name"
+fi
+mv "$sbcl_dir"/"$pack_name" build/external/"$pack_name"
+
 # Move packed zip into prebuilt section
 echo "Moving $sbcl_dir/$pack_name to prebuilt/sbcl."
 mv "$sbcl_dir"/"$pack_name".zip prebuilt/sbcl
