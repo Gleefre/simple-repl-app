@@ -12,3 +12,4 @@ set -e
 ./build-scripts/make-java.sh  # basically ./gradlew assembleDebug
 
 # cp build/outputs/apk/debug/simple-repl-debug.apk prebuilt-apk/
+# ./gradlew installDebug
