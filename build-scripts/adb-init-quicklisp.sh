@@ -1,5 +1,6 @@
 #!/bin/sh
 if [ ! -f build/external/quicklisp.lisp ]; then
+    mkdir -p build/external
     ( cd build/external;
       wget https://beta.quicklisp.org/quicklisp.lisp )
 fi
