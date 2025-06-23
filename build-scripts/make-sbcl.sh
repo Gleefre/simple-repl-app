@@ -30,6 +30,28 @@ mkdir -p build/external
 echo "Deleting $adb_sbcl_dir on the target device."
 adb shell rm -rf "$adb_sbcl_dir"
 
+# Use prebuilt SBCL if it exists and SBCL_REBUILD is not set
+if [ -z "$SBCL_REBUILD" ]; then
+    if [ -f prebuilt/sbcl/"$pack_name".zip ] || [ -d build/external/"$pack_name" ]; then
+        # Unzip prebuilt sbcl if needed
+        if [ ! -d build/external/"$pack_name" ]; then
+            unzip prebuilt/sbcl/"$pack_name".zip -d build/external
+        fi
+
+        # Copy files to android
+        adb push build/external/"$pack_name"/ "$adb_sbcl_dir"/
+
+        # Copy libsbcl.so to prebuilt/libs folder, as well as libraries from android-libs
+        echo "Copying build/external/$pack_name/src/runtime/libsbcl.so to $jni_libs."
+        cp build/external/"$pack_name"/src/runtime/libsbcl.so "$jni_libs"
+        echo "Copying build/external/$pack_name/android-libs/lib*.so to $jni_libs."
+        cp build/external/"$pack_name"/android-libs/lib*.so "$jni_libs"
+
+        # Exit early
+        exit 0
+    fi
+fi
+
 # Clean or clone (repo)
 if [ -d "$sbcl_dir" ];
 then
