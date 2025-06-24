@@ -130,7 +130,7 @@
               (j:jcall :string
                        ("java/io/File" "getAbsolutePath")
                        file)))))
-     path)
+     (j:jstring-to-string path))
    "App path found: ~S"))
 
 ;; Initialization of the lisp
