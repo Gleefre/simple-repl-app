@@ -31,7 +31,7 @@
 (defparameter *log-tag* "ALIEN/GLEEFRE/LISP")
 
 (defun alog (level fmt &rest args)
-  (alog:write level *log-tag* (format nil fmt args)))
+  (alog:write level *log-tag* (apply #'format nil fmt args)))
 
 (defun log-print (obj &optional (fmt "~S") (level :info))
   (alog level fmt obj)
