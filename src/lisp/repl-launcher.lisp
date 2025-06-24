@@ -147,6 +147,9 @@
     (handler-bind ((error #'log-error))
       (move-home (get-app-path))))
   (cl-android:init)
+  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
+  (alog :info "Setting fp traps to 0")
+  (setf (sb-vm:floating-point-modes) (dpb 0 sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
   (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes))))
 
 (define-alien-callable lisp-init sb-alien:int ()
