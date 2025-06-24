@@ -26,6 +26,18 @@
 
 (in-package #:simple-repl-app)
 
+;; Float traps
+
+(defmacro with-float-traps-unmasked (() &body body
+                                     &aux (mode (gensym "mode")))
+  `(let ((,mode (sb-vm:floating-point-modes)))
+     (setf (sb-vm:floating-point-modes)
+           (dpb ,(sb-vm::float-trap-mask '(:overflow :invalid :divide-by-zero))
+                sb-vm:float-traps-byte
+                ,mode))
+     (unwind-protect (progn ,@body)
+       (setf (sb-vm:floating-point-modes) ,mode))))
+
 ;; Logging
 
 (defparameter *log-tag* "ALIEN/GLEEFRE/LISP")
@@ -67,29 +79,32 @@
   "NIL or thread of the Simple REPL.")
 
 (define-alien-callable simple-repl-running-p sb-alien:int ()
-  (alog :info "simple-repl-running-p entry")
-  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
-  (when (and *simple-repl-thread*
-             (not (bt:thread-alive-p *simple-repl-thread*)))
-    (setf *simple-repl-thread* nil))
-  (log-print (if *simple-repl-thread* 1 0)))
+  (with-float-traps-unmasked ()
+    (alog :info "simple-repl-running-p entry")
+    (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
+    (when (and *simple-repl-thread*
+               (not (bt:thread-alive-p *simple-repl-thread*)))
+      (setf *simple-repl-thread* nil))
+    (log-print (if *simple-repl-thread* 1 0))))
 
 (define-alien-callable launch-simple-repl sb-alien:void ()
-  (alog :info "launch-simple-repl entry")
-  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
-  (setf *simple-repl-thread*
-        (or *simple-repl-thread*
-            (simple-repl/server:run *port*))))
+  (with-float-traps-unmasked ()
+    (alog :info "launch-simple-repl entry")
+    (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
+    (setf *simple-repl-thread*
+          (or *simple-repl-thread*
+              (simple-repl/server:run *port*)))))
 
 ;; On click hook
 
 (defparameter *on-click-hooks* nil)
 
 (define-alien-callable on-click sb-alien:void ()
-  (alog :info "on-click entry")
-  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
-  (alog :info "current thread: ~A, *on-click-hooks*: ~A" (bt:current-thread) *on-click-hooks*)
-  (mapcar #'funcall *on-click-hooks*))
+  (with-float-traps-unmasked ()
+    (alog :info "on-click entry")
+    (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
+    (alog :info "current thread: ~A, *on-click-hooks*: ~A" (bt:current-thread) *on-click-hooks*)
+    (mapcar #'funcall *on-click-hooks*)))
 
 ;; Moving quicklisp home
 
