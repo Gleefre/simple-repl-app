@@ -5,14 +5,15 @@
 #+language: en
 #+options: toc:nil
 
-It is a simple app that starts [[https://github.com/Gleefre/simple-repl][Simple REPL]] on click.
-~and-jni~, ~cl-android~ and ~android-log~ are preloaded,
-as well as ~alexandria~, ~serapeum~, ~cffi~, ~usocket~ and ~bordeaux-threads~.
+It is a simple app that starts [[https://github.com/Gleefre/simple-repl][Simple REPL]] on click. ~and-jni~,
+~cl-android~ and ~android-log~ are preloaded, as well as ~alexandria~,
+~serapeum~, ~cffi~, and ~bordeaux-threads~.
 
-A prebuilt apk is available.
+A prebuilt apk can be found in ~/prebuilt/apk/~
+
 To build the app yourself just call ~./build-scripts/make-all.sh~.
 * Connect to the running app instance
-  App launches Simple REPL server on port ~4017~ on ~localhost~ interface.
+  App launches a Simple REPL server on port ~4017~ on ~localhost~ interface.
 
   After connecting to the device with ~adb~ you need to setup port forwarding:
   #+BEGIN_SRC bash
@@ -22,14 +23,14 @@ To build the app yourself just call ~./build-scripts/make-all.sh~.
   And then you can simply connect from any lisp on your computer:
   #+BEGIN_SRC lisp
   (ql:quickload :simple-repl/client)
-  (simple-repl/server:run 4017)
+  (simple-repl/client:run 4017)
   #+END_SRC
 * Bugs & Contributions
   Feel free to report bugs or make suggestions by filing an issue on github.
 
   Feel free to submit pull requests on github as well.
 * License
-  Copyright 2023 Gleefre
+  Copyright 2023-2025 Gleefre
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
