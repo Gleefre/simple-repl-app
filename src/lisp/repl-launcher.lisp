@@ -71,7 +71,7 @@
   (when (and *simple-repl-thread*
              (not (bt:thread-alive-p *simple-repl-thread*)))
     (setf *simple-repl-thread* nil))
-  (if *simple-repl-thread* 1 0))
+  (log-print (if *simple-repl-thread* 1 0)))
 
 (define-alien-callable launch-simple-repl sb-alien:void ()
   (alog :info "launch-simple-repl entry")
@@ -85,7 +85,7 @@
 
 (define-alien-callable on-click sb-alien:void ()
   (alog :info "on-click entry")
-  (alog :info "current thread: ~A, *on-click-hooks: ~A" (bt:current-thread) *on-click-hooks*)
+  (alog :info "current thread: ~A, *on-click-hooks*: ~A" (bt:current-thread) *on-click-hooks*)
   (mapcar #'funcall *on-click-hooks*))
 
 ;; Moving quicklisp home
@@ -137,7 +137,7 @@
 
 (defun on-load ()
   (android-log:init)
-  (alog:write :info *log-tag* "Lisp initialization..")
+  (alog :info "Lisp initialization...")
   (setf *debugger-hook* #'log-backtrace)
   (j:with-env (env)
     (log-print (jll:ensure-local-capacity env 64) "Ensuring local capacity... (~A)")

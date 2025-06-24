@@ -98,9 +98,12 @@ Java_gleefre_simple_repl_SimpleREPLActivity_launchSimpleREPL(JNIEnv *env, jobjec
 
 JNIEXPORT jboolean JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_simpleREPLRunning(JNIEnv *env, jobject thiz) {
+  LOGI("Calling into lisp to check if simple REPL is running");
   if (simple_repl_running_p()) {
+    LOGI("It is running.");
     return JNI_TRUE;
   } else {
+    LOGI("It is not running.");
     return JNI_FALSE;
   }
 }
