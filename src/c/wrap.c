@@ -19,11 +19,11 @@ static int initialized = 0;
 
 int init(char* core) {
   LOGI("Lisp init");
-  char *init_args[] = {"", "--core", core};
+  char *init_args[] = {"", "--core", core, "--disable-ldb", "--disable-debugger"};
   void* self_handle = dlopen("lib.gleefre.wrap.so", RTLD_NOLOAD | RTLD_GLOBAL);
   if (self_handle == NULL) return -2;
   pass_pointer_to_lisp(self_handle);
-  if (initialize_lisp(3, init_args) != 0) return -1;
+  if (initialize_lisp(5, init_args) != 0) return -1;
   if (lisp_init() != 0) return -3;
   return 0;
 }
