@@ -68,6 +68,7 @@
 
 (define-alien-callable simple-repl-running-p sb-alien:int ()
   (alog :info "simple-repl-running-p entry")
+  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
   (when (and *simple-repl-thread*
              (not (bt:thread-alive-p *simple-repl-thread*)))
     (setf *simple-repl-thread* nil))
@@ -75,6 +76,7 @@
 
 (define-alien-callable launch-simple-repl sb-alien:void ()
   (alog :info "launch-simple-repl entry")
+  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
   (setf *simple-repl-thread*
         (or *simple-repl-thread*
             (simple-repl/server:run *port*))))
@@ -85,6 +87,7 @@
 
 (define-alien-callable on-click sb-alien:void ()
   (alog :info "on-click entry")
+  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes)))
   (alog :info "current thread: ~A, *on-click-hooks*: ~A" (bt:current-thread) *on-click-hooks*)
   (mapcar #'funcall *on-click-hooks*))
 
@@ -143,7 +146,8 @@
     (log-print (jll:ensure-local-capacity env 64) "Ensuring local capacity... (~A)")
     (handler-bind ((error #'log-error))
       (move-home (get-app-path))))
-  (cl-android:init))
+  (cl-android:init)
+  (alog :info "fp traps => ~a" (ldb sb-vm:float-traps-byte (sb-vm:floating-point-modes))))
 
 (define-alien-callable lisp-init sb-alien:int ()
   (handler-case (prog1 0 (on-load))

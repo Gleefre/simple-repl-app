@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <android/log.h>
+#include <fenv.h>
 
 #define LOG_TAG   "ALIEN/GLEEFRE/C"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -74,6 +75,7 @@ int init(char* core) {
 
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_initLisp(JNIEnv *env, jobject thiz, jstring path) {
+  LOGI("initLisp: fegetexcept() = %d", fegetexcept());
   if (initialized != 0) {
     LOGW("Tried to initialize lisp, but it was already initialized!");
     return;
@@ -82,28 +84,36 @@ Java_gleefre_simple_repl_SimpleREPLActivity_initLisp(JNIEnv *env, jobject thiz, 
   char* core_filename = strdup((*env)->GetStringUTFChars(env, path, NULL));
   LOGI("Init status: %d", init(core_filename));
   initialized = 1;
+  LOGI("initLisp: fegetexcept() = %d", fegetexcept());
 }
 
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_onClickLisp(JNIEnv *env, jobject thiz) {
+  LOGI("onClickLisp: fegetexcept() = %d", fegetexcept());
   LOGI("Clicked, calling into lisp..");
   on_click();
+  LOGI("onClickLisp: fegetexcept() = %d", fegetexcept());
 }
 
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_launchSimpleREPL(JNIEnv *env, jobject thiz) {
+  LOGI("launchSimpleREPL: fegetexcept() = %d", fegetexcept());
   LOGI("Calling into lisp to launch simple REPL");
   launch_simple_repl();
+  LOGI("launchSimpleREPL: fegetexcept() = %d", fegetexcept());
 }
 
 JNIEXPORT jboolean JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_simpleREPLRunning(JNIEnv *env, jobject thiz) {
+  LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
   LOGI("Calling into lisp to check if simple REPL is running");
   if (simple_repl_running_p()) {
     LOGI("It is running.");
+    LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
     return JNI_TRUE;
   } else {
     LOGI("It is not running.");
+    LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
     return JNI_FALSE;
   }
 }
