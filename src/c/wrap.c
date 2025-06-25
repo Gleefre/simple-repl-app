@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <android/log.h>
 #include <fenv.h>
+#include <signal.h>
 
 #define LOG_TAG   "ALIEN/GLEEFRE/C"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -62,6 +63,69 @@ int redirect_stdout_stderr() {
   return 0;
 }
 
+struct my_siginfo {
+    int signum;
+    char *name;
+};
+
+const struct my_siginfo siglist[] = {
+    {SIGHUP,    "SIGHUP"},
+    {SIGINT,    "SIGINT"},
+    {SIGQUIT,   "SIGQUIT"},
+    {SIGILL,    "SIGILL"},
+    {SIGTRAP,   "SIGTRAP"},
+    {SIGABRT,   "SIGABRT"},
+    {SIGBUS,    "SIGBUS"},
+    {SIGFPE,    "SIGFPE"},
+    {SIGKILL,   "SIGKILL"},
+    {SIGUSR1,   "SIGUSR1"},
+    {SIGSEGV,   "SIGSEGV"},
+    {SIGUSR2,   "SIGUSR2"},
+    {SIGPIPE,   "SIGPIPE"},
+    {SIGALRM,   "SIGALRM"},
+    {SIGTERM,   "SIGTERM"},
+    {SIGSTKFLT, "SIGSTKFLT"},
+    {SIGCHLD,   "SIGCHLD"},
+    {SIGCONT,   "SIGCONT"},
+    {SIGSTOP,   "SIGSTOP"},
+    {SIGTSTP,   "SIGTSTP"},
+    {SIGTTIN,   "SIGTTIN"},
+    {SIGTTOU,   "SIGTTOU"},
+    {SIGURG,    "SIGURG"},
+    {SIGXCPU,   "SIGXCPU"},
+    {SIGXFSZ,   "SIGXFSZ"},
+    {SIGVTALRM, "SIGVTALRM"},
+    {SIGPROF,   "SIGPROF"},
+    {SIGWINCH,  "SIGWINCH"},
+    {SIGIO,     "SIGIO"},
+    {SIGPWR,    "SIGPWR"},
+    {SIGSYS,    "SIGSYS"},
+};
+
+#define SIGNUM 31
+
+void log_signal_handlers() {
+    sigset_t set;
+    struct sigaction action;
+
+    // current thread's blocked signal mask
+    sigemptyset(&set);
+    sigprocmask(0, NULL, &set);
+
+    LOGI("Signal handlers:");
+    for (int i = 0; i < SIGNUM; ++i) {
+        sigaction(siglist[i].signum, NULL, &action);
+        void* pointer = action.sa_flags & SA_SIGINFO ? (void*) action.sa_handler : (void*) action.sa_sigaction;
+        int siginfo_p = action.sa_flags & SA_SIGINFO ? 1 : 0;
+        int default_p = pointer == SIG_DFL ? 1 : 0;
+        int ignore_p = pointer == SIG_IGN ? 1 : 0;
+        LOGI("  %9s: blocked_p=%d; action: siginfo_p=%d, default_p=%d, ignore_p=%d, pointer=%p",
+             siglist[i].name,
+             sigismember(&set, siglist[i].signum),
+             siginfo_p, default_p, ignore_p, pointer);
+    }
+}
+
 int init(char* core) {
   LOGI("Lisp init");
   char *init_args[] = {"", "--core", core, "--disable-ldb", "--disable-debugger"};
@@ -76,6 +140,7 @@ int init(char* core) {
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_initLisp(JNIEnv *env, jobject thiz, jstring path) {
   LOGI("initLisp: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
   if (initialized != 0) {
     LOGW("Tried to initialize lisp, but it was already initialized!");
     return;
@@ -85,35 +150,43 @@ Java_gleefre_simple_repl_SimpleREPLActivity_initLisp(JNIEnv *env, jobject thiz, 
   LOGI("Init status: %d", init(core_filename));
   initialized = 1;
   LOGI("initLisp: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
 }
 
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_onClickLisp(JNIEnv *env, jobject thiz) {
   LOGI("onClickLisp: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
   LOGI("Clicked, calling into lisp..");
   on_click();
   LOGI("onClickLisp: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
 }
 
 JNIEXPORT void JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_launchSimpleREPL(JNIEnv *env, jobject thiz) {
   LOGI("launchSimpleREPL: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
   LOGI("Calling into lisp to launch simple REPL");
   launch_simple_repl();
   LOGI("launchSimpleREPL: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
 }
 
 JNIEXPORT jboolean JNICALL
 Java_gleefre_simple_repl_SimpleREPLActivity_simpleREPLRunning(JNIEnv *env, jobject thiz) {
   LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
+  log_signal_handlers();
   LOGI("Calling into lisp to check if simple REPL is running");
   if (simple_repl_running_p()) {
     LOGI("It is running.");
     LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
+    log_signal_handlers();
     return JNI_TRUE;
   } else {
     LOGI("It is not running.");
     LOGI("simpleREPLRunning: fegetexcept() = %d", fegetexcept());
+    log_signal_handlers();
     return JNI_FALSE;
   }
 }
